@@ -1,32 +1,65 @@
-import React, { Component } from 'react'
-import Main from './views/Main'
+
+import React, { useCallback, useEffect, useState } from 'react'
+import {Main} from './views/Main'
+import firebase from './firebase';
+import { useAuth } from './contexts/AuthContext'
 
 
-export default class App extends Component {
-  constructor () {
-    super();
+export const App = () => {
+  const [posts, setPosts] = useState([]);
+  const db = firebase.firestore();
+  const { signIn } = useAuth();
 
-    this.state = {
-      posts: []
-    }
-  }
+  // const getPosts = () => {
+  //   let newPosts = [];
+    
+  //   db.collection('posts').get().then(ourPosts => {
+  //     ourPosts.forEach(post => {
+  //       newPosts.push({ ...post.data(), postId: post.id,})
+  //       console.log(post.id)
+  //       console.log(post.data())
+  //     })
+  //     setPosts(newPosts)
+  //   })
+
+  //   // Pulling from Flask API
+  //   // fetch('/api/blog')
+  //   // .then(res => res.json())
+  //   // .then(data => 
+  //   //   {
+  //   //     setPosts(data)
+  //   //   })
   
-  componentDidMount () {
-    console.log("Mounted")
-    fetch('./posts.json')
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          posts: data
-        })
-      })
-  }
+  //   // Pulling data from .json file
+  //   // fetch('./posts.json')
+  //   //   .then(res => res.json())
+  //   //   .then(data => {
+  //   //     this.setState({
+  //   //       posts: data
+  //   //     })
+  //   //   })
+  // }
+  const getPosts = useCallback(() => {
+    let newPosts = [];
 
-  render() {
-    return (
-      <div>
-        <Main posts={this.state.posts} />
-      </div>
-    )
-  }
+    db.collection('posts').get().then(ourPosts => {
+      ourPosts.forEach(post => {
+        newPosts.push({ ...post.data(), postId: post.id, })
+        console.log(post.id)
+        console.log(post.data())
+      })
+      setPosts(newPosts)
+    })
+
+    },[db]);
+
+  useEffect(() => {
+    getPosts();
+  }, [ getPosts ])
+  
+  return (
+    <div>
+      <Main signIn={signIn} posts={posts} />
+    </div>
+  )
 }

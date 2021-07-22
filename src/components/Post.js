@@ -1,20 +1,22 @@
-import React, { Component } from 'react'
+import React from 'react'
+import moment from 'moment'
 
-export default class Post extends Component {
-    render() {
-        return (
+export const Post = (props) => {
+    return (
+        <div>
             <li className="list-group-item">
                 <p>
-                    <a href=".">{this.props.post.body}</a>
+                    <a href=".">{props.post.body}</a>
                 </p>
                 <div>
                     <span>
-                        <cite>&mdash; {this.props.post.user.firstName}{this.props.post.user.lastName}</cite>
-                        <small className="float-right">Time</small>
+                        <cite>&mdash; {props.post.userId}</cite>
+                        {/* <cite>&mdash; {props.post.user.first_name} {props.post.user.last_name}</cite> */}
+                        <small className="float-right">{moment(props.post.dateCreated).fromNow()}</small>
                     </span>
-
                 </div>
             </li>
-        )
-    }
+        </div>
+    )
 }
+
