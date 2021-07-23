@@ -1,30 +1,35 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { PostList } from '../components/PostList'
 import { useAuth } from '../contexts/AuthContext'
+import { DataContext } from '../contexts/DataProvider'
 import firebase from '../firebase'
 
 export const Home = (props) => {
     const { currentUser } = useAuth();
+    const { postList, getPosts } = useContext(DataContext);
+
     const addPost = (e) => {
-        e.PreventDefault();
+        e.preventDefault();
 
         const formData = {
             body: e.target.body.value,
-            dateCreated: new Date(),
+            dateCreated: firebase.firestore.Timestamp.fromDate(new Date()),
             dateUpdated: null,
-            user: currentUser.id
+            userId: currentUser.id
         }
 
         firebase.firestore().collection('posts').add(formData)
-        .then(() => console.log('New record created'))
-        .catch(err => console.error(err))
+            .then((docRef) => {
+            getPosts();
+            })
+            .catch(err => console.error(err))
 
         console.log(formData);
     }
 
     return (
         <div>
-            <h3>Home</h3>
+            <h3 style={ { fontSize: '35px' } }>Home</h3>
             <hr />
 
             <form onSubmit={(e) => addPost(e)} action="" method="POST">
@@ -42,7 +47,7 @@ export const Home = (props) => {
 
             <hr />
 
-            <PostList posts={props.posts} />
+            <PostList posts={postList} />
         </div>
     )
 }

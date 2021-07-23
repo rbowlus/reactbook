@@ -8,13 +8,24 @@ export function useAuth() {
 }
 
 export const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState({ loggedIn: false });
     const auth = new firebase.auth.GoogleAuthProvider();
 
     function signIn() {
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             .then(() => {
-                firebase.auth.signInWithPopup(auth);
+                firebase.auth().signInWithPopup(auth)
+                    .then((res) => {
+                        console.log(res.user);
+                        firebase.firestore().collection('users').doc(res.user.uid).get()
+                            .then((snapshot) => {
+                                if (!snapshot.exists) {
+                                    firebase.firestore().collection('users').doc(res.user.uid).set({
+                                        name: res.user.displayName
+                                    })
+                                }
+                        })
+                });
             })
             .catch(err => console.error(`${err.code}\n${err.message}`))
     }
@@ -28,12 +39,19 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Firebase knows wheter we log in or out. If it detects a change, the user object will be updated by setCurrentuser.
         const subscribe = firebase.auth().onAuthStateChanged(u => {
-            setCurrentUser({
-                id: u.uid,
-                name: u.displayName,
-                image: u.photoURL,
-                email: u.email
-            })
+
+            if (u) {
+                setCurrentUser({
+                    id: u.uid,
+                    name: u.displayName,
+                    image: u.photoURL,
+                    email: u.email,
+                    loggedIn: true
+                });
+            }
+            else {
+                setCurrentUser({ loggedIn: false})
+            }
         })
         return subscribe;
     }, [])
