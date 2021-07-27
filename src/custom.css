@@ -1,3 +1,7 @@
 header {
     margin-bottom: 35px;
 }
+
+.form-control {
+    margin-top: 10px;
+}

@@ -1,27 +1,18 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { Product } from '../components/Product'
+import { DataContext } from '../contexts/DataProvider'
 
-export const Shop = () => {
+export const Shop = () => 
+{
+    const { products } = useContext(DataContext)
+    console.log(products)
     return (
         <React.Fragment>
             <h3>Shop</h3>
             <hr />
 
-            <div class="card-deck">
-                <div class="col-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6>
-                                Product Name
-                                <span class="float-right">$0.00</span>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <img class="card-img-top" src="" alt="Product Name" />
-                            <a class="btn btn-success btn-block" style="margin-top: 10px;" href="">Add to cart</a>
-                            <p class="card-text" style="margin-top: 10px;">Product Description</p>
-                        </div>
-                    </div>
-                </div>
+            <div className="card-deck">
+                {products.map(p => <Product key={p.id} product={p} />)}
             </div>
         </React.Fragment>
     )

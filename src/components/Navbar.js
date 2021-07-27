@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { DataContext } from '../contexts/DataProvider';
 
 
 export const Navbar = (props) => {
     const { currentUser, logout } = useAuth();
+    const { cart } = useContext(DataContext)
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -35,11 +37,18 @@ export const Navbar = (props) => {
                             <Link className="nav-link" to="/contact">Contact</Link>
                         </li>
                         <li className="nav-item dropdown">
-                            <Link className="nav-link dropdown-toggle" to="." id="dropdownId" data-toggle="dropdown">Shop</Link>
+                            <a className="nav-link dropdown-toggle" to="." id="dropdownId" data-toggle="dropdown">Shop</a>
                             <div className="dropdown-menu" aria-labelledby="dropdownId">
                                 <Link className="dropdown-item" to="/shop">Products</Link>
                                 <Link className="dropdown-item" to="/shop/cart">Cart</Link>
                             </div>
+                        </li>
+                        <li className="nav-item">
+                            <h4>
+                                <span className="badge badge-secondary">
+                                    <i className="fa fa-shopping-cart"> { cart.quantity } | ${ cart.subtotal } </i>
+                                </span>
+                            </h4>
                         </li>
                     </ul>
                     {/* <form className="form-inline my-2 my-lg-0">
